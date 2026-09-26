@@ -17,13 +17,6 @@ Add to your `Cargo.toml`:
 sdk = { path = "/Library/System/sdk", features = ["CoreText"] }
 ```
 
-Then at the crate root:
-
-```rust
-sdk::preinclude!();
-use CoreText::{CTFontDescriptor, CTFramesetter, CTParagraphStyle};
-```
-
 ## License
 
 TCL v26.1
