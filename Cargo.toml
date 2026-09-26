@@ -1,0 +1,18 @@
+[package]
+name = "coretext"
+version = "26.1.0"
+edition = "2021"
+license = "TCL"
+description = "Apple CoreText-like crisp text stack for TontooOS: font management, layout, rendering, caret"
+readme = "README.md"
+keywords = ["tontoo", "text", "coretext", "font", "layout"]
+categories = ["gui", "text-processing"]
+
+[dependencies]
+parley = "0.11"
+vello = "0.10"
+unicode-segmentation = "1"
+image = "0.25"
+
+[lib]
+crate-type = ["cdylib", "rlib"]

@@ -1,0 +1,8 @@
+{
+  "font_not_found": "Font not found: {}",
+  "font_file_missing": "Font file not found: {}",
+  "family_deactivated": "Font family deactivated: {}",
+  "no_fallback": "No fallback font available for: {}",
+  "layout_failed": "Text layout failed",
+  "invalid_range": "Invalid text range"
+}

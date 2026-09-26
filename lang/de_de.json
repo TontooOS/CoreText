@@ -1,0 +1,8 @@
+{
+  "font_not_found": "Schrift nicht gefunden: {}",
+  "font_file_missing": "Schriftdatei nicht gefunden: {}",
+  "family_deactivated": "Schriftfamilie deaktiviert: {}",
+  "no_fallback": "Keine Ersatzschrift verfügbar für: {}",
+  "layout_failed": "Textlayout fehlgeschlagen",
+  "invalid_range": "Ungültiger Textbereich"
+}
