@@ -76,6 +76,8 @@ pub fn inner(&self) -> &Layout<CtBrush>
 pub fn new(scale: f32) -> Self
 pub fn set_scale(&mut self, scale: f32)
 pub fn set_family(&mut self, family: impl Into<String>)
+pub fn register_font_file(&mut self, path: &Path) -> std::io::Result<Vec<String>>
+pub fn register_font_data(&mut self, data: Vec<u8>) -> Vec<String>
 pub fn create_line(&mut self, text: &str, size: f32, color: Color, weight: f32, italic: bool, tracking: f32) -> CTLine
 pub fn create_frame(&mut self, string: &AttributedString, paragraph: &CTParagraphStyle, base_size: f32, base_color: Color, base_weight: f32, max_width: Option<f32>) -> CTFrame
 pub fn create_plain_frame(&mut self, text: &str, paragraph: &CTParagraphStyle, size: f32, color: Color, weight: f32, max_width: Option<f32>) -> CTFrame
@@ -87,6 +89,11 @@ pub fn measure(&mut self, text: &str, size: f32, color: Color, weight: f32, max_
 - `set_family` selects the layout family: every build pushes
   `"family", system-ui`, so unknown families fall back to the
   system font instead of `.notdef` boxes.
+- `register_font_file` reads a font file into the layout context
+  (no system install needed); `register_font_data` takes raw
+  bytes. Both return the registered family names from the font
+  name tables (empty when the data parses to no fonts).
+  `register_font_file` returns `Err` when the file cannot be read.
 - `measure` returns logical px without keeping the layout.
 - `line_limit` keeps the longest char-prefix plus `…` fitting the
   limit (binary search over re-layouts); link ranges clamp to the

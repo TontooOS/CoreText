@@ -44,6 +44,9 @@ for crisp drawing.
 
 ## Changelog
 
+- 2026-09-28: `CTFramesetter::register_font_file` and
+  `register_font_data` load font files/bytes into the layout
+  context (family names returned from the name tables).
 - 2026-09-28: `CTFramesetter::build` honors `set_family` (pushes
   `"family", system-ui` with a system fallback); previews render
   the named family.

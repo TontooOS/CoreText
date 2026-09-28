@@ -169,6 +169,33 @@ impl CTFramesetter {
         self.family = family.into();
     }
 
+    /// Register a font file (TTF, OTF, TTC, WOFF, WOFF2) into the
+    /// layout context so `family` stacks resolve it without a system
+    /// install. Returns the registered family names read from the
+    /// font name tables. Returns `Err` when the file cannot be read;
+    /// unparseable data yields an empty list instead of an error.
+    pub fn register_font_file(&mut self, path: &std::path::Path) -> std::io::Result<Vec<String>> {
+        let data = std::fs::read(path)?;
+        Ok(self.register_font_data(data))
+    }
+
+    /// Register raw font bytes (TTF, OTF, TTC, WOFF, WOFF2) into the
+    /// layout context. Returns the registered family names; empty
+    /// when the data parses to no fonts.
+    pub fn register_font_data(&mut self, data: Vec<u8>) -> Vec<String> {
+        let registered = self.font_cx.collection.register_fonts(data.into(), None);
+        let mut names = Vec::new();
+        for (id, _) in registered {
+            if let Some(name) = self.font_cx.collection.family_name(id) {
+                let name = name.to_string();
+                if !names.contains(&name) {
+                    names.push(name);
+                }
+            }
+        }
+        names
+    }
+
     /// Lay out one line (no wrapping).
     pub fn create_line(
         &mut self,
@@ -590,5 +617,41 @@ mod tests {
         assert_eq!(frame.line_count(), 1);
         assert!(frame.is_truncated());
         assert!(frame.text().ends_with('…'));
+    }
+
+    #[test]
+    fn missing_font_file_errors() {
+        let mut setter = CTFramesetter::new(1.0);
+        assert!(setter
+            .register_font_file(std::path::Path::new("/definitely/not/here.ttf"))
+            .is_err());
+    }
+
+    #[test]
+    fn garbage_font_data_registers_nothing() {
+        let mut setter = CTFramesetter::new(1.0);
+        let names = setter.register_font_data(b"not a font".to_vec());
+        assert!(names.is_empty());
+    }
+
+    #[test]
+    fn real_font_file_registers_family() {
+        let path = std::path::Path::new("/usr/share/fonts/TTF/DejaVuSerifCondensed.ttf");
+        if !path.exists() {
+            return;
+        }
+        let mut setter = CTFramesetter::new(1.0);
+        let names = setter.register_font_file(path).expect("register");
+        assert!(!names.is_empty());
+        setter.set_family(&names[0]);
+        let frame = setter.create_plain_frame(
+            "Preview 0123456789",
+            &CTParagraphStyle::default(),
+            28.0,
+            Color::WHITE,
+            400.0,
+            None,
+        );
+        assert!(frame.size().0 > 0.0);
     }
 }
