@@ -44,5 +44,8 @@ for crisp drawing.
 
 ## Changelog
 
+- 2026-09-28: `CTFramesetter::build` honors `set_family` (pushes
+  `"family", system-ui` with a system fallback); previews render
+  the named family.
 - 2026-09-26: Initial CoreText release (font, attr, typeset, render,
   caret, decorate, ffi). TontooUI text stack moved to CoreText.

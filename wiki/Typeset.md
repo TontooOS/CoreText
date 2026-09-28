@@ -84,6 +84,9 @@ pub fn measure(&mut self, text: &str, size: f32, color: Color, weight: f32, max_
 
 - All sizes are logical px; the framesetter applies `scale`
   internally so glyphs quantize to physical pixels.
+- `set_family` selects the layout family: every build pushes
+  `"family", system-ui`, so unknown families fall back to the
+  system font instead of `.notdef` boxes.
 - `measure` returns logical px without keeping the layout.
 - `line_limit` keeps the longest char-prefix plus `…` fitting the
   limit (binary search over re-layouts); link ranges clamp to the

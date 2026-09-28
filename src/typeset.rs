@@ -6,11 +6,12 @@
 //! `scale` internally so Parley quantizes glyphs to physical pixels
 //! (crisp text). Measured sizes return logical px.
 
+use std::borrow::Cow;
 use std::ops::Range;
 
 use parley::{
-    Alignment, AlignmentOptions, FontContext, FontStyle, FontWeight, GenericFamily, Layout,
-    LayoutContext, LineHeight, StyleProperty,
+    Alignment, AlignmentOptions, FontContext, FontFamily, FontStyle, FontWeight, GenericFamily,
+    Layout, LayoutContext, LineHeight, StyleProperty,
 };
 use vello::peniko::Color;
 
@@ -144,7 +145,9 @@ pub struct CTFramesetter {
     /// Device pixel ratio. Layouts are built in physical px.
     pub scale: f32,
     /// Preferred family (SF Pro first); Parley resolves it through
-    /// the system loader, the registry documents the chain.
+    /// the system loader, the registry documents the chain. Every
+    /// `build` pushes `"family", system-ui` so previews render the
+    /// named family with a system fallback.
     pub family: String,
 }
 
@@ -281,7 +284,14 @@ impl CTFramesetter {
             self.layout_cx
                 .ranged_builder(&mut self.font_cx, text, self.scale, true);
         builder.push_default(StyleProperty::Brush(CtBrush { color }));
-        builder.push_default(GenericFamily::SystemUi);
+        // Honor the framesetter family with a system-ui fallback so
+        // missing families degrade to the system font instead of
+        // .notdef boxes. `set_family` previously stored the name
+        // without affecting layout; previews depend on this stack.
+        let stack = format!("\"{}\", system-ui", self.family.replace('"', ""));
+        builder.push_default(StyleProperty::FontFamily(FontFamily::Source(
+            Cow::Owned(stack),
+        )));
         builder.push_default(LineHeight::FontSizeRelative(paragraph.line_height));
         builder.push_default(StyleProperty::FontSize(size));
         builder.push_default(StyleProperty::FontWeight(FontWeight::new(weight)));
